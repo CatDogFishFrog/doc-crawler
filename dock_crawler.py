@@ -64,15 +64,24 @@ class DocCrawler:
         return os.path.join(self.output_dir, filename)
 
     async def fetch_page(self, url: str) -> str:
-        """Fetch page content using requests in a thread."""
-        def _fetch():
-            response = self.session.get(url, timeout=30)
+        """Fetch page content using requests in a thread with .html fallback."""
+        def _fetch(target_url):
+            response = self.session.get(target_url, timeout=30)
             response.raise_for_status()
             return response.text
         
         try:
-            return await asyncio.to_thread(_fetch)
+            return await asyncio.to_thread(_fetch, url)
         except Exception as e:
+            # If it's a 404 and doesn't have an extension, try adding .html
+            if not urlparse(url).path.split('/')[-1].count('.') and not url.endswith('/'):
+                html_url = url + ".html"
+                print(f"Retrying with .html extension: {html_url}")
+                try:
+                    return await asyncio.to_thread(_fetch, html_url)
+                except:
+                    pass
+            
             print(f"Error fetching {url}: {e}")
             return None
 
