@@ -165,6 +165,7 @@ cython_debug/
 /.conda_crawler/
 /.agents/
 /browser_context/
+/docs_export/
 
 
 ### JetBrains template

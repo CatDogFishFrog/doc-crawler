@@ -1,99 +1,25 @@
-# Scrapy settings for site_tree_crawler project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+# ──────────────────────────────────────────────────────────────
+# Основні налаштування проєкту
+# ──────────────────────────────────────────────────────────────
 
 BOT_NAME = "site_tree_crawler"
 
 SPIDER_MODULES = ["site_tree_crawler.spiders"]
 NEWSPIDER_MODULE = "site_tree_crawler.spiders"
 
-ADDONS = {}
+# ──────────────────────────────────────────────────────────────
+# Ідентифікація та етика
+# ──────────────────────────────────────────────────────────────
 
-
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "site_tree_crawler (+http://www.yourdomain.com)"
-
-# Obey robots.txt rules
 ROBOTSTXT_OBEY = True
+ROBOTSTXT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 
-# Concurrency and throttling settings
-#CONCURRENT_REQUESTS = 16
-CONCURRENT_REQUESTS_PER_DOMAIN = 1
-DOWNLOAD_DELAY = 1
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 
-# Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+# ──────────────────────────────────────────────────────────────
+# Playwright (браузерний рендеринг) — обов'язкові налаштування
+# ──────────────────────────────────────────────────────────────
 
-# Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
-
-# Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#    "Accept-Language": "en",
-#}
-
-# Enable or disable spider middlewares
-# See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    "site_tree_crawler.middlewares.SiteTreeCrawlerSpiderMiddleware": 543,
-#}
-
-# Enable or disable downloader middlewares
-# See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "site_tree_crawler.middlewares.SiteTreeCrawlerDownloaderMiddleware": 543,
-#}
-
-# Enable or disable extensions
-# See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    "scrapy.extensions.telnet.TelnetConsole": None,
-#}
-
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "site_tree_crawler.pipelines.SiteTreeCrawlerPipeline": 300,
-#}
-
-# Enable and configure the AutoThrottle extension (disabled by default)
-# See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
-# The average number of requests Scrapy should be sending in parallel to
-# each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
-
-# Enable and configure HTTP caching (disabled by default)
-# See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = "httpcache"
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
-
-# Set settings whose default value is deprecated to a future-proof value
-FEED_EXPORT_ENCODING = "utf-8"
-
-
-# Налаштування, які я сам вставляв
-ROBOTSTXT_OBEY = True
-ROBOTSTXT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-
-# === PLAYWRIGHT (правильна конфігурація 2026 року) ===
 DOWNLOAD_HANDLERS = {
     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
@@ -101,20 +27,46 @@ DOWNLOAD_HANDLERS = {
 
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 
-# Додаткові налаштування для стабільності
 PLAYWRIGHT_BROWSER_TYPE = "chromium"
-PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 60000   # 60 секунд
+PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 45000          # 45 секунд — оптимально для Unity
 PLAYWRIGHT_LAUNCH_OPTIONS = {
-    "headless": True,          # постав False, якщо хочеш бачити браузер
-    "timeout": 60000
+    "headless": True,
+    "timeout": 60000,
+    "args": ["--disable-gpu", "--no-sandbox"]          # прискорення на Windows
 }
 
-PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 6
+PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 8                   # скільки вкладок одночасно в одному браузері
 
-# Зменшуємо навантаження, бо Playwright важчий
-CONCURRENT_REQUESTS = 6
-CONCURRENT_REQUESTS_PER_DOMAIN = 4
-DOWNLOAD_DELAY = 0.5
-DEPTH_LIMIT = 6
+# ──────────────────────────────────────────────────────────────
+# Швидкість і обмеження навантаження
+# ──────────────────────────────────────────────────────────────
 
-LOG_LEVEL = "INFO"
+CONCURRENT_REQUESTS = 12                               # головний важіль прискорення
+CONCURRENT_REQUESTS_PER_DOMAIN = 6                     # не більше 6 одночасно до unity3d.com
+
+DOWNLOAD_DELAY = 0.3                                   # базова затримка
+RANDOMIZE_DOWNLOAD_DELAY = True                        # додає випадковість ±50%, виглядає природніше
+
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_START_DELAY = 0.5
+AUTOTHROTTLE_MAX_DELAY = 8.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 4.0                  # ціль — 4 запити одночасно в середньому
+AUTOTHROTTLE_DEBUG = False                             # True тільки для дебагу
+
+DEPTH_LIMIT = 8                                        # для ScriptReference вистачить 5–6, але безпечно
+
+# ──────────────────────────────────────────────────────────────
+# Логування та моніторинг
+# ──────────────────────────────────────────────────────────────
+
+LOG_LEVEL = "INFO"                                     # або "DEBUG" якщо хочеш бачити кожен лінк
+LOGSTATS_INTERVAL = 30                                 # статистика кожні 30 секунд
+
+# ──────────────────────────────────────────────────────────────
+# Інше (кеш, кодування тощо)
+# ──────────────────────────────────────────────────────────────
+
+FEED_EXPORT_ENCODING = "utf-8"
+HTTPCACHE_ENABLED = True                               # кеш відповідей — прискорить повторні запуски
+HTTPCACHE_EXPIRATION_SECS = 86400                      # 24 години
+HTTPCACHE_DIR = ".scrapy_httpcache"

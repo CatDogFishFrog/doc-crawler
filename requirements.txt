@@ -1,4 +1,9 @@
-httpx
 beautifulsoup4
-trafilatura
+crawl4ai
+httpx
 lxml
+playwright
+requests
+scrapy
+scrapy-playwright
+trafilatura
